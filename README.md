@@ -1,9 +1,8 @@
 # PCA-EXP-4-MATRIX-ADDITION-WITH-UNIFIED-MEMORY AY 23-24
-<h3>AIM:</h3>
-<h3>ENTER YOUR NAME:PAVANA G</h3>
-<h3>ENTER YOUR REGISTER NO:212222230105</h3>
+<h3>ENTER YOUR NAME: TAMIZHARASI S</h3>
+<h3>ENTER YOUR REGISTER NO:212222040170</h3>
 <h3>EX. NO:04</h3>
-<h3>DATE:04.10.2024</h3>
+<h3>DATE:10/04/2024</h3>
 <h1> <align=center> MATRIX ADDITION WITH UNIFIED MEMORY </h3>
   Refer to the program sumMatrixGPUManaged.cu. Would removing the memsets below affect performance? If you can, check performance with nvprof or nvvp.</h3>
 
@@ -39,11 +38,12 @@ Allocate Host Memory
 22.	Reset the device using cudaDeviceReset and return from the main function.
 
 ## PROGRAM:
-### With MemSet
+WITH MEMSETS:
 ```
-%%writefile mem.cu
-#include <cuda_runtime.h>
+%%cuda
 #include <stdio.h>
+#include <cuda_runtime.h>
+#include <cuda.h>
 #include <sys/time.h>
 
 #ifndef _COMMON_H
@@ -120,8 +120,6 @@ inline double seconds()
 
 #endif // _COMMON_H
 
-
-
 void initialData(float *ip, const int size)
 {
     int i;
@@ -180,88 +178,17 @@ void checkResult(float *hostRef, float *gpuRef, const int N)
 __global__ void sumMatrixGPU(float *MatA, float *MatB, float *MatC, int nx,
                              int ny)
 {
-    unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
+
+
+
+   unsigned int ix = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int iy = threadIdx.y + blockIdx.y * blockDim.y;
     unsigned int idx = iy * nx + ix;
 
     if (ix < nx && iy < ny)
-    {
         MatC[idx] = MatA[idx] + MatB[idx];
-    }
-}
-#ifndef _COMMON_H
-#define _COMMON_H
 
-#define CHECK(call)                                                            \
-{                                                                              \
-    const cudaError_t error = call;                                            \
-    if (error != cudaSuccess)                                                  \
-    {                                                                          \
-        fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);                 \
-        fprintf(stderr, "code: %d, reason: %s\n", error,                       \
-                cudaGetErrorString(error));                                    \
-        exit(1);                                                               \
-    }                                                                          \
 }
-
-#define CHECK_CUBLAS(call)                                                     \
-{                                                                              \
-    cublasStatus_t err;                                                        \
-    if ((err = (call)) != CUBLAS_STATUS_SUCCESS)                               \
-    {                                                                          \
-        fprintf(stderr, "Got CUBLAS error %d at %s:%d\n", err, __FILE__,       \
-                __LINE__);                                                     \
-        exit(1);                                                               \
-    }                                                                          \
-}
-
-#define CHECK_CURAND(call)                                                     \
-{                                                                              \
-    curandStatus_t err;                                                        \
-    if ((err = (call)) != CURAND_STATUS_SUCCESS)                               \
-    {                                                                          \
-        fprintf(stderr, "Got CURAND error %d at %s:%d\n", err, __FILE__,       \
-                __LINE__);                                                     \
-        exit(1);                                                               \
-    }                                                                          \
-}
-
-#define CHECK_CUFFT(call)                                                      \
-{                                                                              \
-    cufftResult err;                                                           \
-    if ( (err = (call)) != CUFFT_SUCCESS)                                      \
-    {                                                                          \
-        fprintf(stderr, "Got CUFFT error %d at %s:%d\n", err, __FILE__,        \
-                __LINE__);                                                     \
-        exit(1);                                                               \
-    }                                                                          \
-}
-
-#define CHECK_CUSPARSE(call)                                                   \
-{                                                                              \
-    cusparseStatus_t err;                                                      \
-    if ((err = (call)) != CUSPARSE_STATUS_SUCCESS)                             \
-    {                                                                          \
-        fprintf(stderr, "Got error %d at %s:%d\n", err, __FILE__, __LINE__);   \
-        cudaError_t cuda_err = cudaGetLastError();                             \
-        if (cuda_err != cudaSuccess)                                           \
-        {                                                                      \
-            fprintf(stderr, "  CUDA error \"%s\" also detected\n",             \
-                    cudaGetErrorString(cuda_err));                             \
-        }                                                                      \
-        exit(1);                                                               \
-    }                                                                          \
-}
-
-inline double seconds()
-{
-    struct timeval tp;
-    struct timezone tzp;
-    int i = gettimeofday(&tp, &tzp);
-    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
-}
-
-#endif // _COMMON_H
 
 int main(int argc, char **argv)
 {
@@ -346,11 +273,10 @@ int main(int argc, char **argv)
 
     return (0);
 }
-
 ```
-### Without MemSet
+WITHOUT MEMSETS:
 ```
-%%writefile wmem.cu
+%%cuda
 #include <cuda_runtime.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -650,17 +576,13 @@ int main(int argc, char **argv)
 
     return (0);
 }
-
 ```
 
 ## OUTPUT:
-## WITH MEMSET():
-
-![image](https://github.com/user-attachments/assets/005f2421-df21-49af-8776-9d33b9b06098)
-
-## WITHOUT MEMSET():
-
-![image](https://github.com/user-attachments/assets/4df5d6b9-effc-4a5a-953f-38cb18947020)
+WITH MEMSETS
+![image](https://github.com/21005290/PCA-EXP-4-MATRIX-ADDITION-WITH-UNIFIED-MEMORY-AY-23-24/assets/112933246/0b670ecb-1e25-416a-9c39-f40d0a72d09c)
+WITHOUT MEMSETS
+![image](https://github.com/21005290/PCA-EXP-4-MATRIX-ADDITION-WITH-UNIFIED-MEMORY-AY-23-24/assets/112933246/55749c9d-beae-4f6a-80d8-7e5ce98586a2)
 
 ## RESULT:
-Thus the program has been executed by using unified memory. It is observed that removing memset function has given less/more 0.040478s time.
+Thus the program has been executed by using unified memory. It is observed that removing memset function has given less/more 0.02 time.
